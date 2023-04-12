@@ -533,7 +533,7 @@ private:
       }
       traverse_inorder_impl(node->left, os);
       
-      os << node->datum << "\n";
+      os << node->datum << " ";
       
       traverse_inorder_impl(node->right, os);
       
@@ -576,11 +576,11 @@ private:
       }
       //case 2:
       else if(less(node->datum, val)){
-          min_greater_than_impl(node->right, val, less);
+         return min_greater_than_impl(node->right, val, less);
       }
       //case 3:
       else if(!less(node->datum, val) && !less(val, node->datum)){
-          min_greater_than_impl(node->right, val, less);
+          return min_greater_than_impl(node->right, val, less);
       }
       //case 4:
       else if (less(val, node->datum)){
