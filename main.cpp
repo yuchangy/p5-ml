@@ -86,20 +86,55 @@ public:
     }
     
     //calculation:
+     //The classifier should predict whichever label has the highest log-probability score for the post. If multiple labels are tied, predict whichever comes first alphabetically.
+    //calculation:
     double label_probability(){
         double prediction = 0;
+        int numC = 0;
+        double divide = (numC/numPosts);
+        prediction = log(divide);
         return prediction;
     }
     double label_probability_with_word(){
         double prediction = 0;
+        int numCW = 0;
+        double divide = (numCW/numPosts);
+        prediction = log(divide);
         return prediction;
     }
     
+    double label_probability_new_word(){
+        double prediction = 0;
+        string word;
+        if (words.find(word) == words.end()) {
+            double divide = (1/numPosts);
+            prediction = log(divide);
+        }
+       
+        return prediction;
+    }
     double final_probability(){
         double prediction = 0;
+        string word;
+        string tag;
+        int frequency;
+      
+        //does not occur in posts labeled
+        // but does occur in the training data overall
+        //  map_pair.find({{tag, word}, frequency});
+        if (words.find(word) != words.end()) {
+          //      && !(map_pair) {
+            double divide = (frequency/numPosts);
+            prediction = log(divide);
+        }
+       
+        //word does not occur anywhere at all in the training set
+        else if (words.find(word) == words.end()) {
+            double divide = (1/numPosts);
+            prediction = log(divide);
+        }
         return prediction;
     }
-    
 };
 
 
@@ -131,9 +166,23 @@ int main(int argc, const char * argv[]) {
     
     //Training:
     
+    //split string into words
+    // EFFECTS: Return a set of unique whitespace delimited words.x
+    //set<string> unique_words(const string &str) {
+    //  istringstream source(str);
+    //  set<string> words;
+    //  string word;
+    //  while (source >> word) {
+    //    words.insert(word);
+    //  }
+    //  return words;
+    //}
+
+    
     
     //Testing:
     
     
     
 }
+
