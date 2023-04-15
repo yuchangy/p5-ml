@@ -166,7 +166,7 @@ int main(int argc, const char * argv[]) {
     }
     
     EECS280 prediction;
-    prediction.open_file(input);
+    prediction.load(input);
     prediction.final_probability();
     
     int numTraining=0;
