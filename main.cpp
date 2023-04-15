@@ -17,14 +17,37 @@ using namespace std;
 
 class EECS280{
 private:
-    int numPosts;
-    int uniqueWords;
-    set<string> labels;
-    map<string, int> wordSearch; //This item is used to search for the word (use find function)
+    int numPosts = 0;
+    int uniqueWords = 0;
+    set<string> words;
+    map<string, int> wordSearch; //The number of posts with the word string
     map<string, int> labelSearch; //This item is used to search through so
     map<pair<string, string>, int> map_pair;
     
-public:    
+    
+public:
+    set<string> unique_words(const string &str, const string tag) {
+        int frequency = 0;
+      istringstream source(str);
+      string word;
+      while (source >> word) {
+          auto pos = words.find(word);
+          if(*pos == word){
+              continue;
+              
+          }else{
+              uniqueWords++;
+              words.insert(word);
+              map_pair.insert({{tag, word}, frequency++});
+          }
+      }
+      return words;
+    }
+    
+    int wordSearch_frequency(){
+        return 0;
+    }
+    
     int get_numPosts(){
         return numPosts;
     }
@@ -37,8 +60,8 @@ public:
         return labelSearch;
     }
     
-    set<string> get_labels(){
-        return labels;
+    set<string> get_words(){
+        return words;
     }
     
     map<pair<string, string>, int> map_search(map<string, string>){
@@ -54,7 +77,11 @@ public:
         
         while(csvin >> row){
             numPosts++;
+            unique_words(row["content"], row["tag"]);
+            
+            
         }
+        
         
     }
     
