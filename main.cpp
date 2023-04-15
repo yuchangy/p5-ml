@@ -169,4 +169,23 @@ int main(int argc, const char * argv[]) {
     prediction.train(input);
     prediction.final_probability();
     
+      
+    int numTraining=0;
+    cout << "trained on" << numTraining << "examples" << endl;
+    cout << "test data:" << endl;
+    //some kind of loop
+    cout << "correct = " ///<<tag
+         << "predicted = " ///<<tag
+         << "log-probability score = " ///num
+         << "content" << endl;
+    
+    cout << "performance: " ///2/3
+         << "posts predicted correctly"
+         << endl;
+    
+    
+    
+}
+
+
    
