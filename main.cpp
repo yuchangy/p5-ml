@@ -90,55 +90,49 @@ public:
         find_label_numPost();
         find_label_word_numPost();
     }
-        //calculation:
-    //The classifier should predict whichever label has the 
-    //highest log-probability score for the post. 
+           //calculation:
+    //The classifier should predict whichever label has the
+    //highest log-probability score for the post.
     //If multiple labels are tied, predict whichever comes first alphabetically.
     //calculation:
     double label_probability(){
         double prediction = 0;
-        int numC = 0;
-        double divide = (numC/numPosts);
+        double divide = (find_label_numPost()/numPosts);
         prediction = log(divide);
         return prediction;
     }
     double label_probability_with_word(){
         double prediction = 0;
-        int numCW = 0;
-        double divide = (numCW/numPosts);
+        double divide = (find_label_word_numPost()/find_label_numPost());
         prediction = log(divide);
         return prediction;
     }
-    
-    double label_probability_new_word(){
+    double probability_no_word_in_label(){
         double prediction = 0;
-        string word;
-        if (words.find(word) == words.end()) {
-            double divide = (1/numPosts);
-            prediction = log(divide);
-        }
-       
+        double divide = (find_word_numPost()/find_label_numPost());
+        prediction = log(divide);
         return prediction;
     }
+    double probability_no_word(){
+        double prediction = 0;
+        double divide = (1/numPosts);
+        prediction = log(divide);
+        return prediction;
+    }
+       
     double final_probability(){
         double prediction = 0;
-        string word;
-        string tag;
-        int frequency;
-      
-        //does not occur in posts labeled
-        // but does occur in the training data overall
-        //  map_pair.find({{tag, word}, frequency});
-        if (words.find(word) != words.end()) {
-          //      && !(map_pair) {
-            double divide = (frequency/numPosts);
-            prediction = log(divide);
+        if (find_label_numPost() > 0) {
+            prediction = label_probability();
         }
-       
-        //word does not occur anywhere at all in the training set
-        else if (words.find(word) == words.end()) {
-            double divide = (1/numPosts);
-            prediction = log(divide);
+        else if (find_label_word_numPost() > 0) {
+            prediction = label_probability_with_word();
+        }
+        else if (find_label_word_numPost() == 0.0) {
+            prediction = probability_no_word_in_label();
+        }
+        else if (find_word_numPost() == 0.0) {
+            prediction = probability_no_word();
         }
         return prediction;
     }
@@ -183,9 +177,5 @@ int main(int argc, const char * argv[]) {
          << "posts predicted correctly"
          << endl;
     
-    
-    
-    
 }
-
 
