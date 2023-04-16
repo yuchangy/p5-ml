@@ -90,4 +90,102 @@ public:
         find_label_numPost();
         find_label_word_numPost();
     }
+        //calculation:
+    //The classifier should predict whichever label has the 
+    //highest log-probability score for the post. 
+    //If multiple labels are tied, predict whichever comes first alphabetically.
+    //calculation:
+    double label_probability(){
+        double prediction = 0;
+        int numC = 0;
+        double divide = (numC/numPosts);
+        prediction = log(divide);
+        return prediction;
+    }
+    double label_probability_with_word(){
+        double prediction = 0;
+        int numCW = 0;
+        double divide = (numCW/numPosts);
+        prediction = log(divide);
+        return prediction;
+    }
     
+    double label_probability_new_word(){
+        double prediction = 0;
+        string word;
+        if (words.find(word) == words.end()) {
+            double divide = (1/numPosts);
+            prediction = log(divide);
+        }
+       
+        return prediction;
+    }
+    double final_probability(){
+        double prediction = 0;
+        string word;
+        string tag;
+        int frequency;
+      
+        //does not occur in posts labeled
+        // but does occur in the training data overall
+        //  map_pair.find({{tag, word}, frequency});
+        if (words.find(word) != words.end()) {
+          //      && !(map_pair) {
+            double divide = (frequency/numPosts);
+            prediction = log(divide);
+        }
+       
+        //word does not occur anywhere at all in the training set
+        else if (words.find(word) == words.end()) {
+            double divide = (1/numPosts);
+            prediction = log(divide);
+        }
+        return prediction;
+    }
+};
+
+
+int main(int argc, const char * argv[]) {
+    
+    std::cout.precision(3);
+    string input = argv[1];
+    ifstream fin(input);
+    //Command Line Check:
+    if(argc != 3 && argc != 4){
+        std::cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << std::endl;
+        return -1;
+    }
+    
+    if(std::string(argv[3]) != "--debug"){
+        std::cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << std::endl;
+        return -1;
+    }
+
+    if (!fin.is_open()) {
+        cout << "Error opening file: " << input << endl;
+        return -1;
+    }
+    
+    EECS280 prediction;
+    prediction.train(input);
+    prediction.final_probability();
+    
+    int numTraining=0;
+    cout << "trained on" << numTraining << "examples" << endl;
+    cout << "test data:" << endl;
+    //some kind of loop
+    cout << "correct = " ///<<tag
+         << "predicted = " ///<<tag
+         << "log-probability score = " ///num
+         << "content" << endl;
+    
+    cout << "performance: " ///2/3
+         << "posts predicted correctly"
+         << endl;
+    
+    
+    
+    
+}
+
+
