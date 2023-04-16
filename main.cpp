@@ -136,6 +136,24 @@ public:
         }
         return prediction;
     }
+   double final_probability2(){
+        double prediction1 = 0;
+        double prediction2 = 0;
+        double prediction3 = 0;
+        double prediction4 = 0;
+        double log_probability_score = 0;
+        
+        prediction1 = label_probability();
+        prediction2 = label_probability_with_word();
+        prediction3 = probability_no_word_in_label();
+        prediction4 = probability_no_word();
+        
+        if (prediction1 > prediction2) {
+            log_probability_score = prediction1;
+        }
+        
+        return log_probability_score;
+    }
 };
 
 
@@ -164,7 +182,7 @@ int main(int argc, const char * argv[]) {
     prediction.train(input);
     prediction.final_probability();
     
-    int numTraining=0;
+    int numTraining=0; // num posts
     cout << "trained on" << numTraining << "examples" << endl;
     cout << "test data:" << endl;
     //some kind of loop
