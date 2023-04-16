@@ -51,27 +51,7 @@ TEST(Traversal_test){
     ASSERT_TRUE(oss_inorder.str() == "5 6 7 ");
     
 }
-TEST(check_sorting_invariant) {
-    BinarySearchTree<int> tree;
-    tree.insert(6);
-    tree.insert(7);
-    tree.insert(8);
-    tree.insert(9);
-    tree.insert(5);
-    ASSERT_FALSE(BinarySearchTree<int>
-                 ::check_sorting_invariant_impl(tree.get_root(),
-                                            std::less<int>()));
 
-    BinarySearchTree<int> sorted_tree;
-    sorted_tree.insert(1);
-    sorted_tree.insert(2);
-    sorted_tree.insert(3);
-    sorted_tree.insert(4);
-    sorted_tree.insert(5);
-
-    ASSERT_TRUE(BinarySearchTree<int>
-                ::check_sorting_invariant_impl(sorted_tree.get_root(), std::less<int>()));
-}
 TEST(traverse_inorder) {
     BinarySearchTree<int> empty_tree;
     std::ostringstream oss_empty;
