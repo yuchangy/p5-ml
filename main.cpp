@@ -94,28 +94,31 @@ public:
     }
     
     
-    //calculation:
+       //calculation:
     double label_probability(){
            double prediction = 0;
-           double divide = (find_label_numPost()/numPosts);
+           double divide = double (find_label_numPost())/numPosts;
            prediction = log(divide);
            return prediction;
        }
        double label_probability_with_word(){
            double prediction = 0;
-           double divide = (find_label_word_numPost()/find_label_numPost());
+           double divide = double(find_label_word_numPost())/find_label_numPost();
+           //explicit cast to be double
+//           a / b
+//           double(a) / b
            prediction = log(divide);
            return prediction;
        }
        double probability_no_word_in_label(){
            double prediction = 0;
-           double divide = (find_word_numPost()/find_label_numPost());
+           double divide = double (find_word_numPost())/find_label_numPost();
            prediction = log(divide);
            return prediction;
        }
-       double probability_no_word(){ // done
+       double probability_no_word(){
            double prediction = 0;
-           double divide = (1/numPosts);
+           double divide = double (1)/numPosts;
            prediction = log(divide);
            return prediction;
        }
@@ -136,6 +139,9 @@ public:
            }
            return prediction;
        }
+    //loop thru post
+    //loop thru labels during training
+    //if statement if greater than current max
     
       double final_probability2(){
            double prediction1 = 0;
@@ -162,9 +168,7 @@ int main(int argc, const char * argv[]) {
     
     std::cout.precision(3);
     string input = argv[1];
-    string input_test = argv[2];
     ifstream fin(input);
-    ifstream testfin(input_test);
     //Command Line Check:
     if(argc != 3 && argc != 4){
         std::cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << std::endl;
@@ -181,14 +185,8 @@ int main(int argc, const char * argv[]) {
         return -1;
     }
     
-    if(!testfin.is_open()){
-        cout << "Error opening file: " << input_test << endl;
-        return -1;
-    }
-    
     EECS280 prediction;
     prediction.train(input);
-    prediction.test(input_test);
     
     int numTraining = 0; // num posts
        cout << "trained on" << numTraining << "examples" << endl;
@@ -208,5 +206,3 @@ int main(int argc, const char * argv[]) {
     
     
     //Testing:
-    
-
