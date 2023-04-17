@@ -42,6 +42,7 @@ public:
             unique_words(row["content"], row["tag"]);
         }
     }
+     //need above func for testing file and testing posts
     
     set<string> unique_words(const string &str, const string &tag) {
       istringstream source(str);
