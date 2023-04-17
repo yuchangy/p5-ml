@@ -369,13 +369,12 @@ private:
   //          tree rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static Node *copy_nodes_impl(Node *node) {
-      Node* n = new Node;
       if(empty_impl(node)){
-          return n;
+          return nullptr;
       }
+      Node* n = new Node {node->datum, nullptr, nullptr};
       n->left = copy_nodes_impl(node->left);
       n->right = copy_nodes_impl(node->right);
-      n->datum = node->datum;
 
       return n;
   }
@@ -386,6 +385,7 @@ private:
       if(empty_impl(node)){
           return;
       }
+      
       destroy_nodes_impl(node->left);
       destroy_nodes_impl(node->right);
       
@@ -443,20 +443,20 @@ private:
           return node;
       }
       if (less(item, node->datum)){
-          if(node->left == nullptr){
+//          if(node->left == nullptr){
             node->left = insert_impl(node->left, item, less);
-          }
-          else{
-            return insert_impl(node->left, item, less);
-          }
+//          }
+//          else{
+//            return insert_impl(node->left, item, less);
+//          }
         }
       else if (less(node->datum, item)){
-          if(node->right == nullptr){
+//          if(node->right == nullptr){
             node->right = insert_impl(node->right, item, less);
-          }
-          else{
-            return insert_impl(node->right, item, less);
-        }
+//          }
+//          else{
+//            return insert_impl(node->right, item, less);
+//        }
     }
       
       return node;
@@ -627,3 +627,5 @@ std::ostream &operator<<(std::ostream &os,
 }
 
 #endif // DO NOT REMOVE!!
+
+          
