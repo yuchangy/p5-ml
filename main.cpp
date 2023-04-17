@@ -20,14 +20,25 @@ private:
     int numPosts = 0;
     int uniqueWords = 0;
     set<string> words;
-    map<string, string> all_data;
     set<string> labels;
+    map<string, string> all_data;
     map<string, int> wordSearch; //The number of posts with the word string
     map<string, int> labelSearch; //This item is used to search through so
     map<pair<string, string>, int> map_pair;
     
     
 public:
+    const bool label_is_in(string str){
+        if(labelSearch.find(str) != labelSearch.end()){
+            return true;
+        }
+        return false;
+    }
+    
+    const bool word_is_in(string str){
+        
+        return false;
+    }
     
     set<string> unique_words(const string &str, const string &tag) {
         int frequency = 0;
@@ -39,11 +50,10 @@ public:
               continue;
           }
           else{
-              words.insert(word);
+              words.insert({word});
               wordSearch.insert({word, 0});
-              map_pair.insert({{tag, word}, frequency++});
+              map_pair.insert({{tag, word}, frequency});
               uniqueWords++;
-              
           }
       }
       return words;
@@ -56,27 +66,33 @@ public:
             numPosts++;
             unique_words(row["content"], row["tag"]);
             labels.insert(row["tag"]);
-            labelSearch.insert({row["tag"], 0});
             all_data.insert({row["tag"], {row["content"]}});
+            
+            if(label_is_in(row["tag"]) == false){
+                labelSearch.insert({row["tag"], 0});
+            }
+            
+            if(label_is_in(row["tag"])== true){
+                update_label_numpost(row["tag"]);
+            }
         }
     }
         
     double find_word_numPost(){
-        map<std::string ,string>::iterator it = all_data.begin();
-        while(it != all_data.end()){
-            
-        }
+        
+        
         return 0;
     }
     
-    double find_label_numPost(){
-        set<string>::iterator itr = labels.begin();
+    void update_label_numpost(string str){
         map<string,int>::iterator it;
-        map<string, int>::iterator find;
+        
+        it = labelSearch.find(str);
+        it->second += 1;
+    }
     
-        while(it != labelSearch.end()){
-            find = labelSearch.find(*itr);
-        }
+    double find_label_numPost(){
+        
         return 0;
     }
     
@@ -87,73 +103,69 @@ public:
     void train(string data){
         load(data);
         find_label_word_numPost();
-        find_label_numPost();
         find_label_word_numPost();
     }
-           //calculation:
-    //The classifier should predict whichever label has the
-    //highest log-probability score for the post.
-    //If multiple labels are tied, predict whichever comes first alphabetically.
+    
     //calculation:
     double label_probability(){
-        double prediction = 0;
-        double divide = (find_label_numPost()/numPosts);
-        prediction = log(divide);
-        return prediction;
-    }
-    double label_probability_with_word(){
-        double prediction = 0;
-        double divide = (find_label_word_numPost()/find_label_numPost());
-        prediction = log(divide);
-        return prediction;
-    }
-    double probability_no_word_in_label(){
-        double prediction = 0;
-        double divide = (find_word_numPost()/find_label_numPost());
-        prediction = log(divide);
-        return prediction;
-    }
-    double probability_no_word(){
-        double prediction = 0;
-        double divide = (1/numPosts);
-        prediction = log(divide);
-        return prediction;
-    }
-       
-    double final_probability(){
-        double prediction = 0;
-        if (find_label_numPost() > 0) {
-            prediction = label_probability();
-        }
-        else if (find_label_word_numPost() > 0) {
-            prediction = label_probability_with_word();
-        }
-        else if (find_label_word_numPost() == 0.0) {
-            prediction = probability_no_word_in_label();
-        }
-        else if (find_word_numPost() == 0.0) {
-            prediction = probability_no_word();
-        }
-        return prediction;
-    }
-   double final_probability2(){
-        double prediction1 = 0;
-        double prediction2 = 0;
-        double prediction3 = 0;
-        double prediction4 = 0;
-        double log_probability_score = 0;
-        
-        prediction1 = label_probability();
-        prediction2 = label_probability_with_word();
-        prediction3 = probability_no_word_in_label();
-        prediction4 = probability_no_word();
-        
-        if (prediction1 > prediction2) {
-            log_probability_score = prediction1;
-        }
-        
-        return log_probability_score;
-    }
+           double prediction = 0;
+           double divide = (find_label_numPost()/numPosts);
+           prediction = log(divide);
+           return prediction;
+       }
+       double label_probability_with_word(){
+           double prediction = 0;
+           double divide = (find_label_word_numPost()/find_label_numPost());
+           prediction = log(divide);
+           return prediction;
+       }
+       double probability_no_word_in_label(){
+           double prediction = 0;
+           double divide = (find_word_numPost()/find_label_numPost());
+           prediction = log(divide);
+           return prediction;
+       }
+       double probability_no_word(){
+           double prediction = 0;
+           double divide = (1/numPosts);
+           prediction = log(divide);
+           return prediction;
+       }
+          
+       double final_probability(){
+           double prediction = 0;
+           if (find_label_numPost() > 0) {
+               prediction = label_probability();
+           }
+           else if (find_label_word_numPost() > 0) {
+               prediction = label_probability_with_word();
+           }
+           else if (find_label_word_numPost() == 0.0) {
+               prediction = probability_no_word_in_label();
+           }
+           else if (find_word_numPost() == 0.0) {
+               prediction = probability_no_word();
+           }
+           return prediction;
+       }
+      double final_probability2(){
+           double prediction1 = 0;
+           double prediction2 = 0;
+           double prediction3 = 0;
+           double prediction4 = 0;
+           double log_probability_score = 0;
+           
+           prediction1 = label_probability();
+           prediction2 = label_probability_with_word();
+           prediction3 = probability_no_word_in_label();
+           prediction4 = probability_no_word();
+           
+           if (prediction1 > prediction2) {
+               log_probability_score = prediction1;
+           }
+           
+           return log_probability_score;
+       }
 };
 
 
@@ -180,20 +192,24 @@ int main(int argc, const char * argv[]) {
     
     EECS280 prediction;
     prediction.train(input);
-    prediction.final_probability();
     
     int numTraining=0; // num posts
-    cout << "trained on" << numTraining << "examples" << endl;
-    cout << "test data:" << endl;
-    //some kind of loop
-    cout << "correct = " ///<<tag
-         << "predicted = " ///<<tag
-         << "log-probability score = " ///num
-         << "content" << endl;
+       cout << "trained on" << numTraining << "examples" << endl;
+       cout << "test data:" << endl;
+       //some kind of loop
+       cout << "correct = " ///<<tag
+            << "predicted = " ///<<tag
+            << "log-probability score = " ///num
+            << "content" << endl;
+       
+       cout << "performance: " ///2/3
+            << "posts predicted correctly"
+            << endl;
+       
+   }
+    //Training:
     
-    cout << "performance: " ///2/3
-         << "posts predicted correctly"
-         << endl;
     
-}
+    //Testing:
+    
 
