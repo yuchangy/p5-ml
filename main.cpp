@@ -19,30 +19,38 @@ class EECS280{
 private:
     int numPosts = 0;
     int uniqueWords = 0;
-    set<string> words;
     set<string> labels;
-    map<string, string> all_data;
+    map<string, set<string>> all_data;
     map<string, int> wordSearch; //The number of posts with the word string
     map<string, int> labelSearch; //This item is used to search through so
     map<pair<string, string>, int> map_pair;
     
     
 public:
-    const bool label_is_in(string str){
-        if(labelSearch.find(str) != labelSearch.end()){
-            return true;
+    //training portion:
+    void load(string data){
+        csvstream csvin(data);
+        map<string, string> row;
+        while(csvin >> row){
+            numPosts++;
+            labels.insert(row["tag"]);
+            all_data.insert({row["tag"], {unique_words(row["content"], row["tag"])}});
+            
+            if(label_is_in(row["tag"]) == false){
+                labelSearch.insert({row["tag"], 0});
+            }
+            
+            if(label_is_in(row["tag"])== true){
+                update_label_numpost(row["tag"]);
+            }
         }
-        return false;
-    }
-    
-    const bool word_is_in(string str){
-        
-        return false;
+        update_word_numpost();
     }
     
     set<string> unique_words(const string &str, const string &tag) {
         int frequency = 0;
       istringstream source(str);
+        set<string> words;
       string word;
       while (source >> word) {
           auto pos = words.find(word);
@@ -59,29 +67,11 @@ public:
       return words;
     }
     
-    void load(string data){
-        csvstream csvin(data);
-        map<string, string> row;
-        while(csvin >> row){
-            numPosts++;
-            unique_words(row["content"], row["tag"]);
-            labels.insert(row["tag"]);
-            all_data.insert({row["tag"], {row["content"]}});
-            
-            if(label_is_in(row["tag"]) == false){
-                labelSearch.insert({row["tag"], 0});
-            }
-            
-            if(label_is_in(row["tag"])== true){
-                update_label_numpost(row["tag"]);
-            }
+    const bool label_is_in(string str){
+        if(labelSearch.find(str) != labelSearch.end()){
+            return true;
         }
-    }
-        
-    double find_word_numPost(){
-        
-        
-        return 0;
+        return false;
     }
     
     void update_label_numpost(string str){
@@ -89,6 +79,42 @@ public:
         
         it = labelSearch.find(str);
         it->second += 1;
+    }
+        
+    void update_word_numpost(){
+        map<string, int>::iterator it;
+        
+        for(auto const& pair : all_data){
+            for(auto const& elem : pair.second){
+                if(wordSearch.find(elem) != wordSearch.end()){
+                    it = wordSearch.find(elem);
+                    it->second += 1;
+                    continue;
+                }
+            }
+        }
+    }
+    
+    void update_word_label_numpost(string str){
+        map<pair<string, string>, int>::iterator it;
+        
+    }
+    
+    void train(string data){
+        load(data);
+    }
+    
+    void test(string data){
+        label_probability();
+        label_probability_with_word();
+        probability_no_word_in_label();
+        final_probability();
+    }
+    
+    double find_word_numPost(){
+        //use .find function and return the word
+        
+        return 0;
     }
     
     double find_label_numPost(){
@@ -100,11 +126,6 @@ public:
         return 0;
     }
     
-    void train(string data){
-        load(data);
-        find_label_word_numPost();
-        find_label_word_numPost();
-    }
     
     //calculation:
     double label_probability(){
@@ -148,6 +169,7 @@ public:
            }
            return prediction;
        }
+    
       double final_probability2(){
            double prediction1 = 0;
            double prediction2 = 0;
@@ -193,7 +215,7 @@ int main(int argc, const char * argv[]) {
     EECS280 prediction;
     prediction.train(input);
     
-    int numTraining=0; // num posts
+    int numTraining = 0; // num posts
        cout << "trained on" << numTraining << "examples" << endl;
        cout << "test data:" << endl;
        //some kind of loop
