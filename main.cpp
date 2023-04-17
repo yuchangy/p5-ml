@@ -19,11 +19,9 @@ class EECS280{
 private:
     int numPosts = 0;
     int uniqueWords = 0;
-    set<string> labels;
-    map<string, set<string>> all_data;
     map<string, int> wordSearch; //The number of posts with the word string
     map<string, int> labelSearch; //This item is used to search through so
-    map<pair<string, string>, int> map_pair;
+    map<string, map<string, int>> map_pair;
     
     
 public:
@@ -33,39 +31,34 @@ public:
         map<string, string> row;
         while(csvin >> row){
             numPosts++;
-            labels.insert(row["tag"]);
-            all_data.insert({row["tag"], {unique_words(row["content"], row["tag"])}});
-            
             if(label_is_in(row["tag"]) == false){
                 labelSearch.insert({row["tag"], 0});
             }
             
-            if(label_is_in(row["tag"])== true){
-                update_label_numpost(row["tag"]);
+            else if(label_is_in(row["tag"])== true){
+                labelSearch[row["tag"]]++;
             }
+            
+            unique_words(row["content"], row["tag"]);
         }
-        update_word_numpost();
     }
     
     set<string> unique_words(const string &str, const string &tag) {
-        int frequency = 0;
       istringstream source(str);
         set<string> words;
       string word;
-      while (source >> word) {
-          auto pos = words.find(word);
-          if(*pos == word){
-              continue;
-          }
-          else{
+        
+        while (source >> word) {
               words.insert({word});
-              wordSearch.insert({word, 0});
-              map_pair.insert({{tag, word}, frequency});
-              uniqueWords++;
-          }
-      }
+        }
+        for(auto it = words.begin(); it != words.end(); it++){
+            string value = *it;
+            wordSearch[value]++;
+            map_pair[tag][value]++;
+        }
       return words;
     }
+    
     
     const bool label_is_in(string str){
         if(labelSearch.find(str) != labelSearch.end()){
@@ -73,46 +66,20 @@ public:
         }
         return false;
     }
-    
-    void update_label_numpost(string str){
-        map<string,int>::iterator it;
         
-        it = labelSearch.find(str);
-        it->second += 1;
-    }
-        
-    void update_word_numpost(){
-        map<string, int>::iterator it;
-        
-        for(auto const& pair : all_data){
-            for(auto const& elem : pair.second){
-                if(wordSearch.find(elem) != wordSearch.end()){
-                    it = wordSearch.find(elem);
-                    it->second += 1;
-                    continue;
-                }
-            }
-        }
-    }
-    
-    void update_word_label_numpost(string str){
-        map<pair<string, string>, int>::iterator it;
-        
-    }
-    
     void train(string data){
         load(data);
     }
     
     void test(string data){
-        label_probability();
-        label_probability_with_word();
-        probability_no_word_in_label();
-        final_probability();
+        csvstream csvin(data);
+        map<string, string> row;
+        while(csvin >> row){
+            
+        }
     }
     
     double find_word_numPost(){
-        //use .find function and return the word
         
         return 0;
     }
@@ -146,7 +113,7 @@ public:
            prediction = log(divide);
            return prediction;
        }
-       double probability_no_word(){
+       double probability_no_word(){ // done
            double prediction = 0;
            double divide = (1/numPosts);
            prediction = log(divide);
@@ -195,7 +162,9 @@ int main(int argc, const char * argv[]) {
     
     std::cout.precision(3);
     string input = argv[1];
+    string input_test = argv[2];
     ifstream fin(input);
+    ifstream testfin(input_test);
     //Command Line Check:
     if(argc != 3 && argc != 4){
         std::cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << std::endl;
@@ -212,8 +181,14 @@ int main(int argc, const char * argv[]) {
         return -1;
     }
     
+    if(!testfin.is_open()){
+        cout << "Error opening file: " << input_test << endl;
+        return -1;
+    }
+    
     EECS280 prediction;
     prediction.train(input);
+    prediction.test(input_test);
     
     int numTraining = 0; // num posts
        cout << "trained on" << numTraining << "examples" << endl;
