@@ -102,7 +102,7 @@ public:
         load(data);
     }
     
-    void test_debug(string data){
+    void test_debug(string data){ // this is for the test_small --debug
         set<string> post;
         string final_predict_label = "";
         map<string, double> test_map_item;
@@ -140,14 +140,13 @@ public:
         std::cout << "performance: " << performance << " / " << num_test_post << " posts predicted correctly" << "\n";
     }
     
-    void test(string data){
+    void test(string data){ //testing functions
         set<string> post;
         string final_predict_label = "";
         map<string, double> test_map_item;
         double log_probability_score = 0;
         int performance = 0;
         int num_test_post = 0;
-        
         
         csvstream csvin(data);
         map<string, string> row;
@@ -155,9 +154,9 @@ public:
         std::cout << "test data:" << "\n";
         
         while(csvin >> row){
-            post = test_words(row["content"]);
+            post = test_words(row["content"]); //parses all the contents
             
-            test_map_item = test_map(row["tag"], post);
+            test_map_item = test_map(row["tag"], post); //this needs to be fixed because it's just a singular map and it's not inserting values in
             
             final_predict_label = final_probability_answer(test_map_item); //this returns label string
             
@@ -178,9 +177,13 @@ public:
         }
         std::cout << "performance: " << performance << " / " << num_test_post << " posts predicted correctly" << "\n";
         
+        for(auto it = test_map_item.begin(); it != test_map_item.end(); it++){
+            std::cout << "tag = " << it->first << " probability = " << it->second << "\n";
+        }
+        
     }
     
-    map<string, double> test_map(string tag, set<string> content){
+    map<string, double> test_map(string tag, set<string> content){ // map item of each label with the probability associated with it
         map<string, double> predictions;
         predictions[tag] = label_probability(tag);
         
@@ -189,7 +192,7 @@ public:
                 predictions[tag] += label_probability_with_word(*it1, tag);
             }
             else if(find_word_numPost(*it1)){
-                predictions[tag] += probability_no_word_in_label(*it1);
+                predictions[tag] += probability_no_word_in_label(*it1, tag);
             }
             else{
                 predictions[tag] += probability_no_word();
@@ -199,7 +202,7 @@ public:
         return predictions;
     }
     
-    set<string> test_words(const string &str){
+    set<string> test_words(const string &str){ // parses the string
         istringstream source(str);
         set<string> words;
         string word;
@@ -209,18 +212,18 @@ public:
         return words;
     }
     
-    double find_word_numPost(string str){
+    double find_word_numPost(string str){ //finds the word and returns the numPost with word
         map<string, int>::iterator it = wordSearch.find(str);
         
         return it->second;
     }
     
-    double find_label_numPost(string str){
+    double find_label_numPost(string str){ //finds label and return numpost with label
         map<string, int>::iterator it = labelSearch.find(str);
         return it->second;
     }
     
-    bool detect_word_numPost(string str){
+    bool detect_word_numPost(string str){ //returns true if it detects the word in the word map <string, int>
         auto it = wordSearch.find(str);
         if(it != wordSearch.end()){
             return true;
@@ -228,7 +231,7 @@ public:
         return false;
     }
     
-    bool detect_label_word_numPost(string str){
+    bool detect_label_word_numPost(string str){ //return true if it detects the word in map pair with the associated tag str;
         map<string, map<string, int>>::iterator it;
         for (it = map_pair.begin(); it != map_pair.end(); it++) {
             for (auto ptr = it->second.begin(); ptr != it->second.end(); ptr++) {
@@ -242,7 +245,7 @@ public:
         return false;
     }
     
-    double find_label_word_numPost(string str, string tag){
+    double find_label_word_numPost(string str, string tag){//returns the value of the word with associated label
         return map_pair[tag][str];
         
     }
@@ -263,9 +266,9 @@ public:
            return prediction;
        }
         
-       double probability_no_word_in_label(string str){
+       double probability_no_word_in_label(string str, string tag){
            double prediction = 0;
-           double divide = (find_word_numPost(str)/find_label_numPost(str));
+           double divide = (find_word_numPost(str)/find_label_numPost(tag));
            prediction = log(divide);
            return prediction;
        }
@@ -279,10 +282,11 @@ public:
 //
     
     string final_probability_answer(map<string, double> predict){
+        //looks through each label with its associated log
         double temp = -10000;
         string label = "";
         for(auto it = predict.begin(); it != predict.end(); it++){
-            if(it->second > temp){
+            if(it->second > temp){ //the least negative will set string label equal to that label
                 label = it->first;
                 temp = it->second;
             }
@@ -291,7 +295,7 @@ public:
         return label;
     }
     
-    double final_probability_num(map<string, double> test_map, string label){
+    double final_probability_num(map<string, double> test_map, string label){//will look through the map and find the label and return the label
         auto it = test_map.find(label);
         
         return it->second;
@@ -337,7 +341,6 @@ int main(int argc, const char * argv[]) {
     }
     
     prediction.train(input);
-    prediction.debug(input_test);
-    
+    prediction.test(input_test);
 }
 
