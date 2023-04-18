@@ -9,7 +9,6 @@ TEST(test_tree_dimensions){
     tree.insert(6);
     tree.insert(4);
     
-    
     ASSERT_TRUE(tree.size() == 3);
     ASSERT_TRUE(tree.height() == 2);
     ASSERT_TRUE(*tree.min_greater_than(5) == 6);
