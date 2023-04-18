@@ -22,14 +22,12 @@ private:
     map<string, int> wordSearch;
     map<string, int> labelSearch;
     map<string, map<string, int>> map_pair;
-    map<string, string> all_data;
     
 public:
     //training portion:
-    void load(string data){
+    void load(string data, bool debug){
         csvstream csvin(data);
         map<string, string> row;
-        
         while(csvin >> row){
             numPosts++;
             if(label_is_in(row["tag"]) == false){
@@ -41,7 +39,10 @@ public:
             }
             
             unique_words(row["content"], row["tag"]);
-            all_data[row["tag"]] =  row["content"];
+            
+            if(debug == true){
+                std::cout << "  label = " << row["tag"] << ", content = " << row["content"] << "\n" << "\n";
+            }
         }
         uniqueWords = wordSearch.size();
     }
@@ -72,13 +73,12 @@ public:
         return false;
     }
     
-    void debug(string data, bool debug){
+    void debug(string data, string train,  bool debug){
         //print trained Data
         std::cout << "training data: " << "\n";
-        for(auto it = all_data.begin(); it != all_data.end(); it++){
-            std::cout << "  label = " << it->first
-            << ", content = " << it->second << "\n" << "\n";
-        }
+        
+        load(train, debug);
+        
         std::cout << "trained on " << numPosts << " examples" << "\n";
         std::cout << "vocabulary size = " << uniqueWords << "\n" << "\n";
         
@@ -107,7 +107,7 @@ public:
     }
         
     void train(string data, bool debug){
-        load(data);
+        load(data, debug);
     }
     
     void test_debug(string data, bool debug){
@@ -288,7 +288,7 @@ int main(int argc, const char * argv[]) {
     EECS280 prediction;
     bool debug = false;
 
-//    Command Line Check:
+    //Command Line Check:
     if(argc != 3 && argc != 4){
         cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << endl;
         return -1;
@@ -297,9 +297,8 @@ int main(int argc, const char * argv[]) {
     string hi = argv[3];
         if(hi == "--debug"){
             debug = true;
-            prediction.train(argv[1], debug);
-            prediction.debug(argv[2], debug);
-    
+            prediction.debug(argv[2], argv[1], debug);
+
     }
     else if(hi != "--debug"){
         cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << endl;
@@ -317,5 +316,5 @@ int main(int argc, const char * argv[]) {
     }
     
     prediction.train(argv[1], debug);
-    prediction.test(argv[2], debug);
+    prediction.test(argv[2], debug)
 }
