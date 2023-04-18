@@ -280,7 +280,6 @@ public:
     
 };
 
-
 int main(int argc, const char * argv[]) {
     
     cout.precision(3);
@@ -299,7 +298,7 @@ int main(int argc, const char * argv[]) {
         if(hi == "--debug"){
             debug = true;
             prediction.train(argv[1], debug);
-            prediction.debug(argv[2]);
+            prediction.debug(argv[2], debug);
     
     }
     else if(hi != "--debug"){
@@ -318,6 +317,5 @@ int main(int argc, const char * argv[]) {
     }
     
     prediction.train(argv[1], debug);
-    prediction.test(argv[2]);
+    prediction.test(argv[2], debug);
 }
-
