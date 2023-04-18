@@ -304,44 +304,43 @@ public:
     
 };
 
-
 int main(int argc, const char * argv[]) {
     
-    std::cout.precision(3);
-    string input = "/Users/andrewyu/Desktop/280/p5-ml/train_small.csv";
-    string input_test = "/Users/andrewyu/Desktop/280/p5-ml/test_small.csv";
-    ifstream fin(input);
-    ifstream testfin(input_test);
+    cout.precision(3);
+    ifstream fin(argv[1]);
+    ifstream testfin(argv[2]);
     EECS280 prediction;
+    bool debug = false;
 
-    //Command Line Check:
-//    if(argc != 3 && argc != 4){
-//        std::cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << std::endl;
-//        return -1;
-//    }
+//    Command Line Check:
+    if(argc != 3 && argc != 4){
+        cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << endl;
+        return -1;
+    }
+    if (argc == 4) {
+    string hi = argv[3];
+        if(hi == "--debug"){
+            debug = true;
+            prediction.train(argv[1], debug);
+            prediction.debug(argv[2]);
     
-//    if(std::string(argv[3]) == "--debug"){
-//          prediction.train(input);
-//          prediction.debug(input_test);
-//    }
-//
-//    else if(std::string(argv[3]) != "--debug"){
-//        std::cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << std::endl;
-//
-//        return -1;
-//    }
-
+    }
+    else if(hi != "--debug"){
+        cout << "Usage: main.exe TRAIN_FILE TEST_FILE [--debug]" << endl;
+        return -1;
+    }
+    }
     if (!fin.is_open()) {
-        cout << "Error opening file: " << input << endl;
+        cout << "Error opening file: " << argv[1] << endl;
         return -1;
     }
     
     if(!testfin.is_open()){
-        cout << "Error opening file: " << input_test << endl;
+        cout << "Error opening file: " << argv[2] << endl;
         return -1;
     }
     
-    prediction.train(input);
-    prediction.test(input_test);
+    prediction.train(argv[1], debug);
+    prediction.test(argv[2]);
 }
 
