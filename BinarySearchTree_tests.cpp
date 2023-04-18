@@ -27,6 +27,11 @@ TEST(test_tree_dimensions){
     ASSERT_TRUE(tree.size() == 3);
     ASSERT_FALSE(tree.empty());
     
+    BinarySearchTree<int> bst;
+    ASSERT_EQUAL(bst.height(), 0);
+    ASSERT_EQUAL((bst.min_element()), tree.end());
+    ASSERT_EQUAL((bst.max_element()), tree.end());
+    
 }
 TEST(copy_and_destroy){
     BinarySearchTree<int> tree;
@@ -48,6 +53,14 @@ TEST(copy_and_destroy){
     treee = BinarySearchTree<int>();
     ASSERT_TRUE(treee.empty());
     
+    BinarySearchTree<int> treet;
+    treet = BinarySearchTree<int>();
+    ASSERT_TRUE(treet.empty());
+    
+    BinarySearchTree<int> treett;
+    treett.insert(-70);
+    treett = BinarySearchTree<int>();
+    ASSERT_TRUE(treett.empty());
 }
 
 TEST(Traversal_test){
