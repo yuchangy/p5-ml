@@ -19,8 +19,8 @@ class EECS280{
 private:
     double numPosts = 0;
     int uniqueWords = 0;
-    map<string, int> wordSearch; //The number of posts with the word string
-    map<string, int> labelSearch; //This item is used to search through so
+    map<string, int> wordSearch;
+    map<string, int> labelSearch;
     map<string, map<string, int>> map_pair;
     map<string, string> all_data;
     
@@ -72,11 +72,12 @@ public:
         return false;
     }
     
-    void debug(string data){
+    void debug(string data, bool debug){
         //print trained Data
         std::cout << "training data: " << "\n";
         for(auto it = all_data.begin(); it != all_data.end(); it++){
-            std::cout << "  label = " << it->first << ", content = " << it->second << "\n";
+            std::cout << "  label = " << it->first
+            << ", content = " << it->second << "\n" << "\n";
         }
         std::cout << "trained on " << numPosts << " examples" << "\n";
         std::cout << "vocabulary size = " << uniqueWords << "\n" << "\n";
@@ -84,71 +85,36 @@ public:
         //print test daata
         std::cout << "classes:" << "\n";
         for(auto it = labelSearch.begin(); it != labelSearch.end(); it++){
-            std::cout << "  " << it->first << ", "<< it->second << " examples, log-prior = "<< label_probability(it->first) << "\n";
+            std::cout << "  " << it->first << ", "
+            << it->second << " examples, log-prior = "<<
+            label_probability(it->first) << "\n";
         }
         
         //classifier parameters:
         std::cout << "classifier parameters: " << "\n";
         
         for(auto outer = map_pair.begin(); outer != map_pair.end(); outer++){
-            for(auto inner = outer->second.begin(); inner != outer->second.end();  inner++){
-                std::cout << "  " << outer->first << ":" << inner->first <<", count = " << inner->second << ", log-likelihood = " << label_probability_with_word(inner->first, outer->first) << "\n";
+            for(auto inner = outer->second.begin();
+                inner != outer->second.end();  inner++){
+                std::cout << "  " << outer->first << ":"
+                << inner->first <<", count = " << inner->second
+                << ", log-likelihood = "
+                << label_probability_with_word(inner->first, outer->first)
+                << "\n";
             }
         }
-        test_debug(data);
+        test(data, debug);
     }
         
     void train(string data, bool debug){
         load(data);
     }
     
-    void test_debug(string data){ // this is for the test_small --debug
-        set<string> post;
-        string final_predict_label = "";
-        map<string, double> test_map_item;
-        double log_probability_score = 0;
-        int performance = 0;
-        int num_test_post = 0;
-        
-        
-        csvstream csvin(data);
-        map<string, string> row;
-        std::cout << "test data:" << "\n";
-        
-        while(csvin >> row){
-            post = test_words(row["content"]);
-            double predictions = label_probability(row["tag"]);
-            
-            for(auto it1 = post.begin(); it1!= post.end(); it1++){
-                if(detect_label_word_numPost(*it1, row["tag"]) == true){
-                    predictions += label_probability_with_word(*it1, row["tag"]);
-                    final_predict_label = row["tag"];
-                }
-                else if(detect_word_numPost(*it1) == true){
-                    predictions +=  probability_no_word_in_label(*it1,row["tag"]);
-                    final_predict_label = find_word_with_label(*it1);
-                }
-                else{
-                    predictions += probability_no_word();
-                }
-                
-            }
-            
-            std::cout << "  correct = " << row["tag"] <<
-                        " predicted = " << final_predict_label <<
-            " log-probability score = " << log_probability_score <<"\n";
-            
-            std::cout << "  content = " << row["content"] << "\n";
-            
-            if(row["tag"] == final_predict_label){
-                performance++;
-            }
-            num_test_post++;
-        }
-        std::cout << "performance: " << performance << " / " << num_test_post << " posts predicted correctly" << "\n";
+    void test_debug(string data, bool debug){
+        test(data, debug);
     }
     
-    void test(string data){ //testing functions
+    void test(string data, bool debug){
         set<string> post;
         string final_predict_label = "";
         map<string, double> test_map_item;
@@ -158,7 +124,12 @@ public:
         
         csvstream csvin(data);
         map<string, string> row;
-        std::cout << "trained on " << numPosts << " examples" << "\n" << "\n";
+        if(debug == true){
+            std::cout << "trained on " << numPosts
+            << " examples" << "\n" << "\n";
+
+        }
+        
         std::cout << "test data:" << "\n";
         
         while(csvin >> row){
@@ -182,7 +153,6 @@ public:
             }
             
             log_probability_score = predictions;
-            // Return the log prob score associated with the label
             
             std::cout << "  correct = " << row["tag"] <<
                         " predicted = " << final_predict_label <<
@@ -195,13 +165,11 @@ public:
             }
             num_test_post++;
         }
-        std::cout << "performance: " << performance << " / " << num_test_post << " posts predicted correctly" << "\n";
-        
+        std::cout << "performance: " << performance << " / " <<
+        num_test_post << " posts predicted correctly" << "\n";
     }
     
-
-    
-    set<string> test_words(const string &str){ // parses the string
+    set<string> test_words(const string &str){
         istringstream source(str);
         set<string> words;
         string word;
@@ -211,13 +179,13 @@ public:
         return words;
     }
     
-    double find_word_numPost(string str){ //finds the word and returns the numPost with word
+    double find_word_numPost(string str){
         map<string, int>::iterator it = wordSearch.find(str);
         
         return it->second;
     }
     
-    double find_label_numPost(string str){ //finds label and return numpost with label
+    double find_label_numPost(string str){
         map<string, int>::iterator it = labelSearch.find(str);
         return it->second;
     }
@@ -234,7 +202,7 @@ public:
     }
         
         
-    bool detect_word_numPost(string str){ //returns true if it detects the word in the word map <string, int>
+    bool detect_word_numPost(string str){
         auto it = wordSearch.find(str);
         if(it != wordSearch.end()){
             return true;
@@ -242,7 +210,7 @@ public:
         return false;
     }
     
-    bool detect_label_word_numPost(string str, string tag){ //return true if it detects the word in map pair with the associated tag str;
+    bool detect_label_word_numPost(string str, string tag){
         map<string, map<string, int>>::iterator it = map_pair.find(tag);
         
         for (auto ptr = it->second.begin(); ptr != it->second.end(); ptr++) {
@@ -253,7 +221,7 @@ public:
         return false;
     }
     
-    double find_label_word_numPost(string str, string tag){//returns the value of the word with associated label
+    double find_label_word_numPost(string str, string tag){
         return map_pair[tag][str];
         
     }
@@ -292,11 +260,10 @@ public:
 //
     
     string final_probability_answer(map<string, double> predict){
-        //looks through each label with its associated log
         double temp = -10000;
         string label = "";
         for(auto it = predict.begin(); it != predict.end(); it++){
-            if(it->second > temp){ //the least negative will set string label equal to that label
+            if(it->second > temp){
                 label = it->first;
                 temp = it->second;
             }
@@ -305,29 +272,11 @@ public:
         return label;
     }
     
-    double final_probability_num(map<string, double> test_map, string label){//will look through the map and find the label and return the label
+    double final_probability_num(map<string, double> test_map, string label){
         auto it = test_map.find(label);
         
         return it->second;
     }
-    
-//
-//    double final_probability(){
-//        double prediction = 0;
-//        if(find_label_numPost() > 0) {
-//                    prediction = label_probability();
-//              }
-//            else if(find_label_word_numPost() > 0) {
-//                   prediction = label_probability_with_word();
-//              }
-//           else if (find_label_word_numPost() == 0.0) {
-//                  prediction = probability_no_word_in_label();
-//              }
-//            else if (find_word_numPost() == 0.0) {
-//                  prediction = probability_no_word();
-//             }
-//       return prediction;
-//     }
     
 };
 
