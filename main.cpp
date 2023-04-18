@@ -250,10 +250,10 @@ public:
         
     }
     
-    //calculation:
+     //calculation:
     double label_probability(string str){
            double prediction = 0;
-           double divide = (find_label_numPost(str)/numPosts);
+           double divide = (double(find_label_numPost(str)/numPosts));
            prediction = log(divide);
            return prediction;
        }
@@ -261,21 +261,22 @@ public:
        double label_probability_with_word(string str, string tag){
            double prediction = 0;
            double divide = 0;
-           divide = (find_label_word_numPost(str, tag)/find_label_numPost(tag));
+           divide = (double(find_label_word_numPost(str, tag)/find_label_numPost(tag)));
            prediction = log(divide);
            return prediction;
        }
         
        double probability_no_word_in_label(string str, string tag){
            double prediction = 0;
-           double divide = (find_word_numPost(str)/find_label_numPost(tag));
+           double divide = (double(find_word_numPost(str)
+                                   /find_label_numPost(tag)));
            prediction = log(divide);
            return prediction;
        }
         
        double probability_no_word(){ // done
            double prediction = 0;
-           double divide = (1/numPosts);
+           double divide = (double(1/numPosts));
            prediction = log(divide);
            return prediction;
        }
