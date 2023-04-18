@@ -92,4 +92,71 @@ TEST(traverse_preorder) {
     tree.traverse_preorder(oss);
     ASSERT_TRUE(oss.str() == "6 5 7 ");
 }
+TEST(check_sorting_invariant) {
+    
+}
+TEST(operator1) {
+    BinarySearchTree<int> bst;
+    bst.insert(10);
+    bst.insert(5);
+    bst.insert(15);
+    
+    BinarySearchTree<int>::Iterator it1 = bst.begin();
+    BinarySearchTree<int>::Iterator it2 = bst.begin();
+    bool result1 = (it1 == it2);
+    bool result2 = (it1 != it2);
+
+    ASSERT_TRUE(result1 == true);
+    ASSERT_TRUE(result2 == false);
+
+}
+
+TEST(operator2) {
+    BinarySearchTree<int> bst;
+    bst.insert(10);
+    bst.insert(5);
+    bst.insert(15);
+    bst.insert(3);
+    bst.insert(8);
+    bst.insert(12);
+    bst.insert(18);
+    
+    BinarySearchTree<int>::Iterator it = bst.begin();
+    ++it;
+    ASSERT_TRUE(*it == 5);
+}
+TEST(operator3) {
+    BinarySearchTree<int> bst;
+    bst.insert(10);
+    bst.insert(5);
+    bst.insert(15);
+    bst.insert(3);
+    bst.insert(8);
+    bst.insert(12);
+    bst.insert(18);
+    
+    BinarySearchTree<int>::Iterator it = bst.begin();
+    BinarySearchTree<int>::Iterator result = it++;
+
+    ASSERT_TRUE(*result == 10);
+    ASSERT_TRUE(*it == 5);
+
+}
+TEST(operator4) {
+    BinarySearchTree<int> bst;
+    bst.insert(10);
+    bst.insert(5);
+    bst.insert(15);
+    
+    BinarySearchTree<int>::Iterator it1 = bst.begin();
+    BinarySearchTree<int>::Iterator it2 = ++bst.begin();
+
+    bool result1 = (it1 != it2);
+    bool result2 = (it1 == it2);
+    
+    ASSERT_TRUE(result1 == true);
+    ASSERT_TRUE(result2 == false);
+
+}
+
 TEST_MAIN()
